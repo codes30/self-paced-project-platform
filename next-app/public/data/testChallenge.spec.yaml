@@ -1,0 +1,30 @@
+openapi: 3.0.0
+info:
+  title: testChallenge
+  description: testChallenge
+servers:
+  - url: http://{serverHost}:{serverPort}
+    description: testChallenge
+    variables:
+      serverHost:
+        default: localhost
+      serverPort:
+        default: 3000
+paths:
+  /test/challenge:
+    post:
+      summary: testing Route
+      parameters:
+        - name: test
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: test
+          content:
+            application/json:
+              example:
+                message: "test"
+

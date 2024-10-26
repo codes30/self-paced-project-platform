@@ -1,0 +1,25 @@
+{
+  "name": "pub-sub-demo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.7.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "jest": "^29.7.0",
+    "pg": "^8.7.1",
+    "redis": "^4.7.0",
+    "websocket": "^1.0.35",
+    "ws": "^8.18.0"
+  }
+}

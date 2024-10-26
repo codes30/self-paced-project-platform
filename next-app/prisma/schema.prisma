@@ -1,0 +1,93 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Challenge {
+  id              String       @id @default(cuid())
+  name            String       @unique
+  isActive        Boolean
+  image           String
+  notionDocPageId String
+  submissions     Submission[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String       @id @default(cuid())
+  name          String?
+  email         String?      @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  submissions   Submission[]
+  role          Role         @default(USER)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Submission {
+  id             String     @id @default(cuid())
+  userId         String
+  user           User       @relation(fields: [userId], references: [id])
+  status         String
+  backendUrl     String
+  websocketUrl   String
+  submissionTime String
+  executionTime  String?
+  results        Results[]
+  challenge      Challenge? @relation(fields: [challengeId], references: [id])
+  challengeId    String?
+}
+
+model Results {
+  id           String     @id @default(cuid())
+  title        String
+  status       String
+  duration     Int
+  submissionId String
+  submission   Submission @relation(fields: [submissionId], references: [id])
+}
+
+enum Role {
+  USER
+  ADMIN
+}

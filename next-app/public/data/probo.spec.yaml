@@ -1,0 +1,357 @@
+openapi: 3.0.0
+info:
+  title: Probo API
+  description: API for creating users, symbols, managing orders, and balances in an opinions trading app.
+paths:
+  /user/create/{userId}:
+    post:
+      summary: Create a new user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: User successfully created
+          content:
+            application/json:
+              example:
+                message: "User created successfully"
+
+  /onramp/inr:
+    post:
+      summary: Deposit INR to a user's account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                amount:
+                  type: number
+      responses:
+        200:
+          description: Amount successfully deposited
+          content:
+            application/json:
+              example:
+                message: "INR deposited successfully"
+
+  /balance/inr/{userId}:
+    get:
+      summary: Get a user's INR balance
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: User balance
+          content:
+            application/json:
+              example:
+                message:
+                  balance: 1000000
+                  locked: 0
+
+  /symbol/create/{symbol}:
+    post:
+      summary: Create a new stock symbol
+      parameters:
+        - name: symbol
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Symbol successfully created
+          content:
+            application/json:
+              example:
+                message: "Symbol created successfully"
+
+  /orderbook/{symbol}:
+    get:
+      summary: Get orderbook for a symbol
+      parameters:
+        - name: symbol
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Orderbook retrieved successfully
+          content:
+            application/json:
+              example:
+                ETH_USDT_15_Oct_2024_10_30:
+                  yes:
+                    "8.5":
+                      total: 10
+                      orders:
+                        buyer2:
+                          type: "reverted"
+                          quantity: 10
+                  no:
+                    "2.5":
+                      total: 10
+                      orders:
+                        seller3:
+                          type: "sell"
+                          quantity: 10
+
+  /order/buy:
+    post:
+      summary: Place a buy order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                stockSymbol:
+                  type: string
+                quantity:
+                  type: number
+                price:
+                  type: number
+                stockType:
+                  type: string
+                  enum: [yes, no]
+      responses:
+        200:
+          description: Buy order successfully placed
+          content:
+            application/json:
+              example:
+                message: "Buy order placed successfully"
+
+  /order/sell:
+    post:
+      summary: Place a sell order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                stockSymbol:
+                  type: string
+                quantity:
+                  type: number
+                price:
+                  type: number
+                stockType:
+                  type: string
+                  enum: [yes, no]
+      responses:
+        200:
+          description: Sell order successfully placed
+          content:
+            application/json:
+              example:
+                message: "Sell order placed successfully"
+
+  /balance/stock/{userId}:
+    get:
+      summary: Get a user's stock balances
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: User's stock balances
+          content:
+            application/json:
+              example:
+                BTC_USDT_10_Oct_2024_9_30:
+                  yes:
+                    quantity: 1
+                    locked: 0
+                  no:
+                    quantity: 1
+                    locked: 1
+
+  /orderbook:
+    get:
+      summary: Get all order books
+      responses:
+        200:
+          description: Order books retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  properties:
+                    yes:
+                      type: object
+                      additionalProperties:
+                        type: object
+                        properties:
+                          total:
+                            type: number
+                            example: 10
+                          orders:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                type:
+                                  type: string
+                                  example: "reverted"
+                                quantity:
+                                  type: number
+                                  example: 10
+                    no:
+                      type: object
+                      additionalProperties:
+                        type: object
+                        properties:
+                          total:
+                            type: number
+                            example: 10
+                          orders:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                type:
+                                  type: string
+                                  example: "sell"
+                                quantity:
+                                  type: number
+                                  example: 10
+              example:
+                ETH_USDT_15_Oct_2024_10_30:
+                  yes:
+                    "8.5":
+                      total: 10
+                      orders:
+                        buyer2:
+                          type: "reverted"
+                          quantity: 10
+                  no:
+                    "2.5":
+                      total: 10
+                      orders:
+                        seller3:
+                          type: "sell"
+                          quantity: 10
+                BTC_USDT_12_Oct_2024_9_30:
+                  yes:
+                    "9.0":
+                      total: 8
+                      orders:
+                        buyer5:
+                          type: "buy"
+                          quantity: 8
+                  no:
+                    "3.0":
+                      total: 5
+                      orders:
+                        seller6:
+                          type: "sell"
+                          quantity: 5
+
+  /balance/stocks:
+    get:
+      summary: Get stock balances for all users
+      responses:
+        200:
+          description: Stock balances retrieved successfully
+          content:
+            application/json:
+              example:
+                user1:
+                  BTC_USDT_10_Oct_2024_9_30:
+                    yes:
+                      quantity: 1
+                      locked: 0
+                user2:
+                  BTC_USDT_10_Oct_2024_9_30:
+                    no:
+                      quantity: 3
+                      locked: 4
+
+  /orderbook/snapshot:
+    post:
+      summary: Save a snapshot of the current order book
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                OrderbookSnapshot:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: "123"
+                    snapshot_time:
+                      type: string
+                      example: "timestamp"
+                    last_pulled_queue_item_id:
+                      type: string
+                      example: "string"
+                    data:
+                      type: object
+                      example:
+                        ETH_USDT_15_Oct_2024_10_30:
+                          yes:
+                            "8.5":
+                              total: 10
+                              orders:
+                                buyer2:
+                                  type: "reverted"
+                                  quantity: 10
+                          no:
+                            "2.5":
+                              total: 10
+                              orders:
+                                seller3:
+                                  type: "sell"
+                                  quantity: 10
+                        BTC_USDT_12_Oct_2024_9_30:
+                          yes:
+                            "9.0":
+                              total: 8
+                              orders:
+                                buyer5:
+                                  type: "buy"
+                                  quantity: 8
+                          no:
+                            "3.0":
+                              total: 5
+                              orders:
+                                seller6:
+                                  type: "sell"
+                                  quantity: 5
+      responses:
+        200:
+          description: Snapshot successfully saved
+          content:
+            application/json:
+              example:
+                message: "Snapshot saved successfully"

@@ -1,0 +1,104 @@
+openapi: 3.0.0
+info:
+  title: Trading System WebSocket API
+  description: WebSocket API for the Trading System, including subscribing to stock updates and receiving order book updates.
+  version: 1.0.0
+
+components:
+  schemas:
+    Subscribe:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - subscribe
+        stockSymbol:
+          type: string
+          description: Symbol of the stock to subscribe to.
+          example: BTC_USDT_10_Oct_2024_9_30
+
+    Unsubscrbbe:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - unsubscribe
+        stockSymbol:
+          type: string
+          description: Symbol of the stock to unsubscribe .
+          example: BTC_USDT_10_Oct_2024_9_30
+
+    OrderbookUpdate:
+      type: object
+      properties:
+        event:
+          type: string
+          enum:
+            - event_orderbook_update
+          example: event_orderbook_update
+        message:
+          type: object
+          properties:
+            yes:
+              type: object
+              description: Updates for the Order book "yes" stocks where price is the key.
+              additionalProperties:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Total quantity available.
+                  orders:
+                    type: object
+                    description: Details of individual orders where user ID is the key.
+                    additionalProperties:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          enum:
+                            - sell
+                            - reverted
+                          example: reverted
+                        quantity:
+                          type: integer
+                          description: Quantity in the order.
+                          example: 100
+            no:
+              type: object
+              description: Updates for the Order book "no" stocks where price is the key.
+              additionalProperties:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Total quantity available.
+                  orders:
+                    type: object
+                    description: Details of individual orders where user ID is the key.
+                    additionalProperties:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          enum:
+                            - sell
+                            - reverted
+                          example: sell
+                        quantity:
+                          type: integer
+                          description: Quantity in the order.
+                          example: 100
+
+x-websocket:
+  subscribe:
+    description: Subscribe to stock symbol updates.
+    message:
+      $ref: "#/components/schemas/Subscribe"
+  events:
+    - name: event_orderbook_update
+      description: Received when there is an update to the order book.
+      payload:
+        $ref: "#/components/schemas/OrderbookUpdate"

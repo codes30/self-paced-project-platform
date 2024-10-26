@@ -1,0 +1,30 @@
+services:
+  redis:
+    image: redis:latest
+
+  next:
+    build:
+      context: ./next-app
+    depends_on:
+      - redis
+    environment:
+      REDIS_HOST: redis
+      PORT: 3001
+      NEXT_PUBLIC_URL: http://next:3001
+    ports:
+      - "3001:3001"
+
+  worker:
+    build:
+      context: ./worker
+    depends_on:
+      - redis
+    environment:
+      REDIS_HOST: redis
+      NEXT_PUBLIC_URL: http://next:3001
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge
